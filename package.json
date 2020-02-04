@@ -14,7 +14,7 @@
     "build": "rescripts build",
     "test": "rescripts test",
     "eject": "rescripts eject",
-    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron-dev": "concurrently \"yarn start\" \"wait-on http://localhost:3000 && electron --enable-speech-dispatcher .\"",
     "postinstall": "electron-builder install-app-deps",
     "preelectron-pack": "yarn build",
     "electron-pack": "electron-builder build"
@@ -35,6 +35,10 @@
     "concurrently": "^5.1.0",
     "electron": "^4.0.6",
     "electron-builder": "^20.38.5",
+    "fibers": "^4.0.2",
+    "node-sass": "^4.13.1",
+    "sass": "^1.25.0",
+    "typescript": "^3.7.5",
     "wait-on": "^4.0.0"
   },
   "build": {
@@ -53,6 +57,7 @@
       "buildResources": "assets"
     },
     "linux": {
+      "icon": "public/logo.png",
       "asar": true,
       "target": [
         "AppImage",
@@ -63,17 +68,17 @@
     "mac": {
       "target": "pkg",
       "category": "public.app-category.developer-tools",
-      "icon": "public/logo512.png",
+      "icon": "public/logo.ico",
       "type": "development"
     },
     "win": {
       "asar": false,
       "target": "nsis",
-      "icon": "public/logo512.png"
+      "icon": "public/logo.ico"
     },
     "nsis": {
-      "installerIcon": "public/logo512.png",
-      "installerHeaderIcon": "public/logo512.png",
+      "installerIcon": "public/logo.ico",
+      "installerHeaderIcon": "public/logo.ico",
       "deleteAppDataOnUninstall": true
     },
     "pkg": {
