@@ -6,14 +6,11 @@ import TextField from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
 import VolumeUpOutlinedIcon from "@material-ui/icons/VolumeUpOutlined";
 import PlayArrowIcon from "@material-ui/icons/PlayArrow";
-import PauseIcon from "@material-ui/icons/Pause";
 import PauseCircleOutlineIcon from "@material-ui/icons/PauseCircleOutline";
 import StopIcon from "@material-ui/icons/Stop";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
 
 function Copyright() {
   return (
@@ -55,7 +52,7 @@ class TTS extends React.Component {
   state = {
     text: "Welcome to Text to Speech",
     buttonAccess: {
-      canPause: true,
+      canPause: false,
       canResume: false
     }
   };
@@ -70,20 +67,33 @@ class TTS extends React.Component {
 
   handlePlay = () => {
     let msg = new window.SpeechSynthesisUtterance(this.state.text);
+
     msg.onpause = () => this.setState({ buttonAccess: {
       canPause: false,
       canResume: true
     } });
+
     msg.onresume = () => this.setState({ buttonAccess: {
       canPause: true,
       canResume: false
     } });
-    console.log(msg);
+
+    msg.onend = () => this.setState({ buttonAccess: {
+      canPause: false,
+      canResume: false
+    } });
+
+    msg.onerror = (err) => console.error(err);
+
+    msg.onstart = () => this.setState({ buttonAccess: {
+      canPause: true,
+      canResume: false
+    } });
+
     synth.speak(msg);
   };
 
   render() {
-    console.log(this.state);
     const classes = this.props.classes;
     return (
       <Container maxWidth="sm">
@@ -103,15 +113,12 @@ class TTS extends React.Component {
               required
               variant="outlined"
               margin="normal"
-              id="text"
               label="Enter the text"
-              placeholder="Hello World"
-              rows="4"
+              rows="5"
+              rowsMax="12"
               name="text"
               value={this.state.text}
-              onChange={e => {
-                this.setState({ text: e.target.value });
-              }}
+              onChange={e => this.setState({ text: e.target.value })}
             />
             <div className={classes.buttonGroups}>
               <Button
@@ -156,37 +163,18 @@ class TTS extends React.Component {
                 size="large"
                 startIcon={<StopIcon />}
                 className={classes.submit}
-                onClick={() => synth.cancel()}
+                onClick={() => {
+                  synth.cancel();
+                  this.setState({ buttonAccess: {
+                      canPause: false,
+                      canResume: false
+                    }
+                  });
+                }}
               >
                 Stop
               </Button>
             </div>
-            {/* <div className={classes.buttonGroups}>
-              <Tooltip title="Play/Pause">
-                <IconButton
-                  aria-label="cancel"
-                  className={classes.submit}
-                  onClick={this.handlePlay}
-                >
-                  {this.state.speaking ? (
-                    <PauseIcon color="primary" fontSize="large" />
-                  ) : (
-                    <PlayArrowIcon color="primary" fontSize="large" />
-                  )}
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Stop">
-                <IconButton
-                  aria-label="cancel"
-                  className={classes.submit}
-                  onClick={() => {
-                    synth.cancel();
-                  }}
-                >
-                  <StopIcon color="secondary" fontSize="large" />
-                </IconButton>
-              </Tooltip>
-            </div> */}
           </div>
         </div>
         <Box mt={8}>
